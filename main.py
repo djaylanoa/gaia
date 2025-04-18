@@ -4,9 +4,7 @@ from cryptography.fernet import Fernet
 import os
 import time
 from werkzeug.utils import secure_filename
-import openai
 
-openai.api_key = "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"
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-here'  # Change this in production
 
@@ -268,6 +266,11 @@ def manage_users():
 
     return render_template('manage_users.html', users=users, access_levels=ACCESS_LEVELS.keys())
 
+import requests  # Add at the top if it's not already there
+
+# Set your local AI endpoint via ngrok
+AI_API_URL = "https://a118-143-179-251-66.ngrok-free.app"
+
 @app.route('/ask_gaia', methods=['POST'])
 def ask_gaia():
     if 'name' not in session:
@@ -279,16 +282,18 @@ def ask_gaia():
         return redirect(url_for('dashboard'))
 
     try:
-        response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are GAIA, a helpful AI assistant focused on secure document management and cybersecurity."},
-                {"role": "user", "content": question}
-            ]
-        )
-        answer = response.choices[0].message.content
-        
-        # Store the interaction as a message
+        # Send the question to your local Mistral model via Ollama/ngrok
+        payload = {
+            "model": "mistral",
+            "prompt": question,
+            "stream": False
+        }
+
+        response = requests.post(f"{AI_API_URL}/api/generate", json=payload)
+        result = response.json()
+        answer = result.get("response", "[No response received]")
+
+        # Save answer to database
         conn = get_db()
         cursor = conn.cursor()
         cursor.execute(
@@ -297,54 +302,14 @@ def ask_gaia():
         )
         conn.commit()
         conn.close()
-        
+
         flash('GAIA has responded to your question', 'success')
         return jsonify({"response": answer})
+
     except Exception as e:
-        flash(f'Error getting response from GAIA: {str(e)}', 'danger')
+        flash(f'Error connecting to local AI: {str(e)}', 'danger')
         return jsonify({"error": str(e)}), 500
 
-@app.route('/messages')
-def messages():
-    if 'name' not in session:
-        return redirect(url_for('login'))
-
-    search_query = request.args.get('search', '')
-    search_type = request.args.get('search_type', 'content')
-
-    conn = get_db()
-    cursor = conn.cursor()
-
-    if session['clearance'] == 'Omega' and search_query:
-        if search_type == 'user':
-            cursor.execute("""
-                SELECT * FROM messages 
-                WHERE sender LIKE ? OR receiver LIKE ?
-                ORDER BY timestamp DESC
-            """, (f'%{search_query}%', f'%{search_query}%'))
-        else:
-            cursor.execute("""
-                SELECT * FROM messages 
-                WHERE content LIKE ?
-                ORDER BY timestamp DESC
-            """, (f'%{search_query}%',))
-    elif session['clearance'] == 'Omega':
-        cursor.execute("SELECT * FROM messages ORDER BY timestamp DESC")
-    else:
-        cursor.execute("""
-            SELECT * FROM messages 
-            WHERE receiver = ? OR receiver = 'ALL'
-            ORDER BY timestamp DESC
-        """, (session['name'],))
-
-    messages = cursor.fetchall()
-    cursor.execute("SELECT name FROM users")
-    users = cursor.fetchall()
-    conn.close()
-
-    return render_template('messages.html', messages=messages, users=users)
-
-@app.route('/send_message', methods=['POST'])
 def send_message():
     if 'name' not in session:
         return redirect(url_for('login'))
