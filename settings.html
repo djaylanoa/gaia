@@ -1,0 +1,163 @@
+
+{% extends "base.html" %}
+{% block content %}
+<div class="gaia-dashboard">
+    <div class="gaia-header">
+        <h1 class="gaia-title">Settings</h1>
+        <div class="clearance-badge">Clearance Level: {{ session.clearance }}</div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <div class="header-content">
+                <span class="icon">⬡</span>
+                Interface Settings
+            </div>
+        </div>
+        <div class="panel-content">
+            <form method="POST" action="{{ url_for('update_settings') }}">
+                <div class="form-group">
+                    <label>Interface Theme</label>
+                    <select class="cyber-select" name="theme">
+                        <option value="gaia" {% if session.get('theme', 'gaia') == 'gaia' %}selected{% endif %}>GAIA Theme</option>
+                        <option value="minimal" {% if session.get('theme', 'gaia') == 'minimal' %}selected{% endif %}>Minimal Theme</option>
+                    </select>
+                </div>
+                <button type="submit" class="cyber-button">
+                    <span class="button-content">
+                        <span class="icon">⬡</span>
+                        Save Settings
+                    </span>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+{% if session.get('theme') == 'minimal' %}
+body {
+    background: #f5f7f9;
+    color: #2a2f35;
+    font-family: 'Work Sans', sans-serif;
+}
+
+.gaia-title {
+    font-size: 2.5em;
+    color: #2a2f35;
+    text-shadow: none;
+    margin: 0;
+    font-weight: 600;
+}
+
+.clearance-badge {
+    color: #2a2f35;
+    background: #e1e5ea;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.panel {
+    background: white;
+    border: 1px solid #e1e5ea;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.panel-header {
+    background: #f5f7f9;
+    border-bottom: 1px solid #e1e5ea;
+    color: #2a2f35;
+    padding: 20px;
+}
+
+.cyber-select, .cyber-button {
+    background: white;
+    border: 1px solid #e1e5ea;
+    color: #2a2f35;
+    transition: all 0.2s ease;
+}
+
+.cyber-select:hover, .cyber-button:hover {
+    border-color: #2a2f35;
+    background: #f5f7f9;
+}
+
+.cyber-button:active {
+    background: #e1e5ea;
+}
+
+.icon {
+    color: #2a2f35;
+}
+
+{% else %}
+body {
+    background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)),
+                url('https://images.unsplash.com/photo-1451187863213-d1bcbaae3fa3?ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80');
+    background-size: cover;
+    color: #00f0ff;
+    font-family: 'Space Mono', monospace;
+}
+
+.gaia-title {
+    font-size: 3em;
+    color: #00f0ff;
+    text-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+    margin: 0;
+    letter-spacing: 5px;
+}
+
+.clearance-badge {
+    color: #00f0ff;
+    background: rgba(0, 240, 255, 0.1);
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    border: 1px solid #00f0ff;
+}
+
+.panel {
+    background: rgba(0, 15, 20, 0.8);
+    border: 1px solid #00f0ff;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.panel-header {
+    background: rgba(0, 240, 255, 0.1);
+    border-bottom: 1px solid #00f0ff;
+    padding: 20px;
+}
+{% endif %}
+
+.gaia-dashboard {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.gaia-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 0.9em;
+}
+
+.panel-content {
+    padding: 25px;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,163 @@
+
+{% extends "base.html" %}
+{% block content %}
+<div class="gaia-login">
+    <div class="gaia-header">
+        <h1 class="gaia-title">GAIA</h1>
+        <h2 class="encryption-title">Access Node</h2>
+    </div>
+    <div class="login-panel panel">
+        <div class="panel-header">
+            <div class="header-content">
+                <span class="icon">⬡</span>
+                System Login
+            </div>
+        </div>
+        <div class="panel-content">
+            <form method="POST">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" class="cyber-input" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" class="cyber-input" name="password" required>
+                </div>
+                <button type="submit" class="cyber-button">
+                    <span class="button-content">
+                        <span class="icon">⬡</span>
+                        Access System
+                    </span>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+body {
+    background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)),
+                url('https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+    background-size: cover;
+    color: #00f0ff;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    min-height: 100vh;
+}
+
+.gaia-login {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.gaia-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.gaia-title {
+    font-size: 4em;
+    color: #00f0ff;
+    text-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+    margin: 0;
+    letter-spacing: 10px;
+}
+
+.encryption-title {
+    color: #00f0ff;
+    font-size: 2em;
+    margin: 10px 0;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+}
+
+.panel {
+    background: rgba(0, 15, 20, 0.8);
+    border: 1px solid #00f0ff;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.panel-header {
+    background: rgba(0, 240, 255, 0.1);
+    padding: 20px;
+    border-bottom: 1px solid #00f0ff;
+    font-size: 1.3em;
+    letter-spacing: 2px;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.icon {
+    color: #00f0ff;
+    font-size: 1.2em;
+}
+
+.panel-content {
+    padding: 25px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 0.9em;
+}
+
+.cyber-input {
+    width: 100%;
+    background: rgba(0, 15, 20, 0.8);
+    border: 1px solid #00f0ff;
+    color: #00f0ff;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 4px;
+    font-size: 1em;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
+}
+
+.cyber-input:focus {
+    outline: none;
+    border-color: #fff;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+}
+
+.cyber-button {
+    background: rgba(0, 240, 255, 0.1);
+    border: 1px solid #00f0ff;
+    color: #00f0ff;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1em;
+    letter-spacing: 1px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.cyber-button:hover {
+    background: rgba(0, 240, 255, 0.2);
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+}
+
+.button-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+</style>
+{% endblock %}

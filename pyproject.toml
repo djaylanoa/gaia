@@ -1,8 +1,11 @@
 [project]
-name = "workspace"
+name = "python-template"
 version = "0.1.0"
-description = "Add your description here"
+description = ""
+authors = ["Djaylano asper a.djaylano@gmail.com"]
 requires-python = ">=3.11"
 dependencies = [
-    "openai==1.57.0",
+    "cryptography>=44.0.2",
+    "flask>=3.1.0",
+    "werkzeug>=3.1.3",
 ]

@@ -1,0 +1,373 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="gaia-dashboard">
+    <div class="gaia-header">
+        <h1 class="gaia-title">GAIA</h1>
+        <h2 class="encryption-title">Heaphestus</h2>
+        <div class="clearance-badge">Clearance Level: {{ session.clearance }}</div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="panel upload-panel">
+            <div class="panel-header">
+                <div class="header-content">
+                    <span class="icon">⬡</span>
+                    Upload File
+                </div>
+            </div>
+            <div class="panel-content">
+                <form method="POST" action="{{ url_for('upload_file') }}" enctype="multipart/form-data" id="upload-form">
+                    <div class="form-group">
+                        <label>File Title</label>
+                        <input type="text" class="cyber-input" name="title" placeholder="Enter file designation">
+                    </div>
+                    <div class="form-group">
+                        <label>Input Type</label>
+                        <select class="cyber-select" id="input-type" onchange="toggleInputType()">
+                            <option value="file">Upload File</option>
+                            <option value="text">Type Text</option>
+                        </select>
+                    </div>
+                    <div id="file-input-section" class="form-group">
+                        <div class="drop-zone" id="drop-zone">
+                            <div class="drop-zone-content">
+                                <span class="icon">⬢</span>
+                                <span>Drag and drop files here or click to select</span>
+                            </div>
+                            <input type="file" name="file" id="file-input" style="display: none;">
+                        </div>
+                    </div>
+                    <div id="text-input-section" class="form-group" style="display: none;">
+                        <label>Enter text content</label>
+                        <textarea class="cyber-input" name="text_content" rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Document Clearance Level</label>
+                        <select class="cyber-select" name="doc_clearance" required>
+                            {% for level in ACCESS_LEVELS %}
+                                {% if ACCESS_LEVELS[level] <= ACCESS_LEVELS[session.clearance] %}
+                                    <option value="{{ level }}">{{ level }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="cyber-button">
+                        <span class="button-content">
+                            <span class="icon">⬡</span>
+                            Encrypt File
+                        </span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="panel files-panel">
+            <div class="panel-header">
+                <div class="header-content">
+                    <span class="icon">⬡</span>
+                    Available Files ({{ files|length }})
+                </div>
+            </div>
+            <div class="panel-content">
+                {% if files %}
+                    <div class="files-list">
+                    {% for file in files %}
+                        <div class="file-item">
+                            <span class="file-title">{{ file.title }}</span>
+                            <form method="POST" action="{{ url_for('retrieve_file') }}">
+                                <input type="hidden" name="filename" value="{{ file.filename }}">
+                                <button type="submit" class="cyber-button small">
+                                    <span class="button-content">Decrypt</span>
+                                </button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="no-files">No files available in database</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="gaia-chat-panel">
+        <div class="panel">
+            <div class="panel-header">
+                <div class="header-content">
+                    <span class="icon">⬡</span>
+                    Ask GAIA
+                </div>
+            </div>
+            <div class="panel-content">
+                <form id="gaia-form" class="cyber-form">
+                    <textarea id="gaia-question" class="cyber-input" placeholder="Ask GAIA a question..."></textarea>
+                    <button type="submit" class="cyber-button">Ask</button>
+                </form>
+                <div id="gaia-response" class="cyber-response"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('gaia-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const question = document.getElementById('gaia-question').value;
+            const response = document.getElementById('gaia-response');
+            response.innerHTML = 'Thinking...';
+
+            try {
+                const result = await fetch('/ask_gaia', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `question=${encodeURIComponent(question)}`
+                });
+                const data = await result.json();
+                response.innerHTML = data.response.replace(/\n/g, '<br>');
+            } catch (error) {
+                response.innerHTML = `Error: ${error.message}`;
+            }
+        });
+    </script>
+<style>
+body {
+    background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)),
+                url('https://images.unsplash.com/photo-1451187863213-d1bcbaae3fa3?ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80');
+    background-size: cover;
+    color: #00f0ff;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    min-height: 100vh;
+}
+
+.gaia-dashboard {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.gaia-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.gaia-title {
+    font-size: 4em;
+    color: #00f0ff;
+    text-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+    margin: 0;
+    letter-spacing: 10px;
+}
+
+.encryption-title {
+    color: #00f0ff;
+    font-size: 2em;
+    margin: 10px 0;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+}
+
+.clearance-badge {
+    display: inline-block;
+    padding: 8px 16px;
+    border: 1px solid #00f0ff;
+    border-radius: 4px;
+    background: rgba(0, 240, 255, 0.1);
+    font-size: 1.1em;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.panel {
+    background: rgba(0, 15, 20, 0.8);
+    border: 1px solid #00f0ff;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.panel-header {
+    background: rgba(0, 240, 255, 0.1);
+    padding: 20px;
+    border-bottom: 1px solid #00f0ff;
+    font-size: 1.3em;
+    letter-spacing: 2px;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.icon {
+    color: #00f0ff;
+    font-size: 1.2em;
+}
+
+.panel-content {
+    padding: 25px;
+}
+
+.cyber-input, .cyber-select {
+    width: 100%;
+    background: rgba(0, 15, 20, 0.8);
+    border: 1px solid #00f0ff;
+    color: #00f0ff;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+.cyber-button {
+    background: rgba(0, 240, 255, 0.1);
+    border: 1px solid #00f0ff;
+    color: #00f0ff;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1em;
+    letter-spacing: 1px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.cyber-button:hover {
+    background: rgba(0, 240, 255, 0.2);
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+}
+
+.cyber-button.small {
+    padding: 8px 16px;
+    font-size: 0.9em;
+    width: auto;
+    margin-top: 0;
+}
+
+.button-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.drop-zone {
+    border: 2px dashed #00f0ff;
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(0, 240, 255, 0.05);
+}
+
+.drop-zone:hover {
+    background: rgba(0, 240, 255, 0.1);
+}
+
+.drop-zone-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+}
+
+.file-item:last-child {
+    border-bottom: none;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 0.9em;
+}
+
+.gaia-chat-panel {
+    margin-top: 30px;
+}
+
+.cyber-response {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #00f0ff;
+    background: rgba(0, 15, 20, 0.8);
+    color: #00f0ff;
+    white-space: pre-wrap;
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+function toggleInputType() {
+    const inputType = document.getElementById('input-type').value;
+    const fileSection = document.getElementById('file-input-section');
+    const textSection = document.getElementById('text-input-section');
+
+    if (inputType === 'file') {
+        fileSection.style.display = 'block';
+        textSection.style.display = 'none';
+    } else {
+        fileSection.style.display = 'none';
+        textSection.style.display = 'block';
+    }
+}
+
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+const uploadForm = document.getElementById('upload-form');
+
+dropZone.addEventListener('click', () => fileInput.click());
+
+dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.style.background = 'rgba(0, 240, 255, 0.15)';
+});
+
+dropZone.addEventListener('dragleave', () => {
+    dropZone.style.background = 'rgba(0, 240, 255, 0.05)';
+});
+
+dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.style.background = 'rgba(0, 240, 255, 0.05)';
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        fileInput.files = files;
+        uploadForm.submit();
+    }
+});
+
+fileInput.addEventListener('change', () => {
+    if (fileInput.files.length > 0) {
+        uploadForm.submit();
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GAIA - Secure Document System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <nav class="cyber-nav">
+        <div class="nav-container">
+            <a class="nav-brand" href="/">GAIA</a>
+            <div class="nav-links">
+                {% if session.get('name') %}
+                    {% if session.get('clearance') in ['Alpha Prime', 'Omega'] %}
+                        <a class="cyber-link" href="{{ url_for('dashboard') }}">
+                            <span class="icon">⬡</span> Data
+                        </a>
+                        <a class="cyber-link" href="{{ url_for('manage_users') }}">
+                            <span class="icon">⬡</span> Users
+                        </a>
+                        <a class="cyber-link" href="{{ url_for('settings') }}">
+                            <span class="icon">⬡</span> Settings
+                        </a>
+                    {% endif %}
+                    <a class="cyber-link" href="{{ url_for('messages') }}">
+                        <span class="icon">⬡</span> Messages
+                    </a>
+                    <a class="cyber-link" href="{{ url_for('logout') }}">
+                        <span class="icon">⬡</span> Logout
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    <div class="flash-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="cyber-alert {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+    {% block content %}{% endblock %}
+
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Work+Sans:wght@300;400;600&display=swap');
+
+    * {
+        box-sizing: border-box;
+        transition: all 0.2s ease-in-out;
+    }
+
+    {% if session.get('theme') == 'minimal' %}
+    body {
+        background: white;
+        font-family: 'Arial', sans-serif;
+    }
+    
+    .cyber-nav {
+        background: white;
+        border-bottom: 1px solid #ddd;
+        backdrop-filter: none;
+    }
+    
+    .nav-brand {
+        color: black;
+        text-shadow: none;
+    }
+    
+    .cyber-link {
+        color: black;
+    }
+    
+    .cyber-link:hover {
+        border-color: #ddd;
+        background: #f5f5f5;
+        box-shadow: none;
+    }
+    
+    .cyber-alert {
+        background: white;
+        border: 1px solid #ddd;
+        color: black;
+    }
+    
+    .icon {
+        display: none;
+    }
+    {% else %}
+    body {
+    {% endif %}
+        background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1451187863213-d1bcbaae3fa3?ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80');
+        background-size: cover; /* Added to ensure image covers the entire body */
+        background-repeat: no-repeat; /* Added to prevent image repetition */
+        /* Added to make the horizon picture visible*/
+    }
+    .cyber-nav {
+        background: rgba(0, 15, 20, 0.9);
+        border-bottom: 1px solid #00f0ff;
+        padding: 15px 0;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 2px 20px rgba(0, 240, 255, 0.1);
+    }
+
+    .nav-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .nav-brand {
+        color: #00f0ff;
+        text-decoration: none;
+        font-size: 1.5em;
+        letter-spacing: 5px;
+        text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 20px;
+    }
+
+    .cyber-link {
+        color: #00f0ff;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 8px 16px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+        font-family: 'Space Mono', monospace;
+        text-transform: uppercase;
+        font-size: 0.9em;
+        letter-spacing: 1px;
+    }
+
+    .cyber-link:hover {
+        border-color: #00f0ff;
+        background: rgba(0, 240, 255, 0.1);
+        box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+    }
+
+    .flash-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+
+    .cyber-alert {
+        padding: 15px 25px;
+        margin-bottom: 10px;
+        border: 1px solid #00f0ff;
+        background: rgba(0, 15, 20, 0.9);
+        color: #00f0ff;
+        border-radius: 4px;
+        backdrop-filter: blur(10px);
+        animation: slideIn 0.3s ease;
+    }
+
+    .cyber-alert.success {
+        border-color: #00ff00;
+        color: #00ff00;
+    }
+
+    .cyber-alert.danger {
+        border-color: #ff0000;
+        color: #ff0000;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    .gaia-chat-panel {
+        max-width: 800px;
+        margin: 20px auto;
+    }
+
+    .cyber-form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .cyber-input {
+        background: rgba(0, 15, 20, 0.9);
+        border: 1px solid #00f0ff;
+        color: #00f0ff;
+        padding: 10px;
+        border-radius: 4px;
+        min-height: 100px;
+        font-family: 'Space Mono', monospace;
+    }
+
+    .cyber-response {
+        margin-top: 20px;
+        padding: 15px;
+        background: rgba(0, 15, 20, 0.9);
+        border: 1px solid #00f0ff;
+        color: #00f0ff;
+        border-radius: 4px;
+        white-space: pre-wrap;
+    }
+
+    @media (max-width: 768px) {
+        .nav-container {
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+        }
+
+        .nav-links {
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .cyber-link {
+            justify-content: center;
+        }
+    }
+    </style>
+</body>
+</html>
